@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>PWA Teste</title>
+
+<link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#0d6efd">
+
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PWA Teste">
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    text-align:center;
+    margin-top:100px;
+}
+
+button{
+    padding:15px 25px;
+    font-size:18px;
+    cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>PWA Teste</h1>
+
+<p>Instale este aplicativo.</p>
+
+<button id="btnInstall" style="display:none;">
+    Instalar App
+</button>
+
+<div id="iosHint" style="display:none;">
+    <p>
+        No iPhone:
+        <br><br>
+        Compartilhar →
+        Adicionar à Tela de Início
+    </p>
+</div>
+
+<script>
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+}
+
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+
+    e.preventDefault();
+
+    deferredPrompt = e;
+
+    document.getElementById('btnInstall')
+        .style.display = 'inline-block';
+
+});
+
+document.getElementById('btnInstall')
+.addEventListener('click', async () => {
+
+    if (!deferredPrompt)
+        return;
+
+    deferredPrompt.prompt();
+
+    await deferredPrompt.userChoice;
+
+    deferredPrompt = null;
+});
+
+const isIOS =
+/iphone|ipad|ipod/i.test(navigator.userAgent);
+
+const isStandalone =
+window.navigator.standalone;
+
+if (isIOS && !isStandalone){
+    document.getElementById('iosHint')
+        .style.display = 'block';
+}
+
+</script>
+
+</body>
+</html>
